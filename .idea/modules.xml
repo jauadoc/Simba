@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/simba-client/simba-client.iml" filepath="$PROJECT_DIR$/simba-client/simba-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/simba-parent.iml" filepath="$PROJECT_DIR$/simba-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/simba-server/simba-server.iml" filepath="$PROJECT_DIR$/simba-server/simba-server.iml" />
+    </modules>
+  </component>
+</project>
