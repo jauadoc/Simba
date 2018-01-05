@@ -1,9 +1,11 @@
 package com.sun.simba.utils;
 
+import java.io.Serializable;
+
 /**
  * Created by sunxin on 2017/11/9.
  */
-public class StringUtils {
+public class StringUtils implements Serializable{
 
     public static boolean isEmpty(String value){
         return value==null || value.length()<=0;

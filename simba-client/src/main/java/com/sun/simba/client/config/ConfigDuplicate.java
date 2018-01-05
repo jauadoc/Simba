@@ -1,5 +1,6 @@
 package com.sun.simba.client.config;
 
+import com.sun.simba.loader.ConfigChangeListener;
 import com.sun.simba.loader.ConfigLoaderManage;
 import com.sun.simba.loader.ConfigLoaderManageFactory;
 import com.sun.simba.utils.StringUtils;
@@ -10,18 +11,17 @@ import java.util.Map;
 /**
  * Created by sunxin on 2017/11/9.
  */
-public class ConfigDuplicate {
+public class ConfigDuplicate implements ConfigChangeListener{
 
-    private static ConfigLoaderManage configLoaderManage = ConfigLoaderManageFactory.newInstantce();
+    private static ConfigLoaderManage configLoaderManage = ConfigLoaderManageFactory.newInstance();
 
 
     //TODO 待思考:这里的配置每次通过loader加载后,是否要全部重新更新该map?防止陈旧的废弃配置污染环境?还是保留冗余保证程序正常运行
-    /**
-     * 本地缓存的配置信息(通过loader加载的zk中的配置信息)
-     */
+    //TODO 待思考:是否需要定时将配置写入硬盘,防止zk cluster 挂掉?一般来说集群了话稳定性应该没问题.写入硬盘唯一的好处就是集群挂了的时候服务器恰好重启可以硬盘读配置保证服务可运行.但是client应该避免资源占用.
+    //TODO 待思考:这里的配置仅维护在一个map中?是否可以维护在多个map中来区分不同来源 或给配置划分级别/类别/other?
+
     private Map<String, String> localConfigCache = new HashMap<String, String>();
 
-    //单例的本地配置副本
     private static ConfigDuplicate configDuplicate;
     public static ConfigDuplicate getInstance(){
         if (configDuplicate == null){
@@ -31,6 +31,9 @@ public class ConfigDuplicate {
                     //如果副本新创建,则证明系统初次启动,本地并无配置副本,直接从远程加载配置信息
                     //TODO 启动本地线程,根据定时策略进行定时拉取配置信息,防止因为网络问题导致配置信息无法被同步到该应用中
 
+
+                    //向管理器注册配置修改监听
+                    configLoaderManage.addListener(configDuplicate);
                 }
             }
         }
@@ -52,5 +55,10 @@ public class ConfigDuplicate {
 
         //TODO ""/null
         return value;
+    }
+
+    @Override
+    public void onChange(String key, String value) {
+        this.localConfigCache.put(key, value);
     }
 }
